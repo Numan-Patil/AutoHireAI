@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Recruitment Assistant</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet" type="text/css" />
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>AI Recruitment Assistant</h1>
+            <p class="subtitle">Automated Candidate Screening and Matching</p>
+        </header>
+        
+        <div class="workflow">
+            <div class="step-indicator active" id="step1-indicator">
+                <div class="step-circle">1</div>
+                <div class="step-title">Job Description</div>
+            </div>
+            <div class="step-indicator" id="step2-indicator">
+                <div class="step-circle">2</div>
+                <div class="step-title">CV Upload</div>
+            </div>
+            <div class="step-indicator" id="step3-indicator">
+                <div class="step-circle">3</div>
+                <div class="step-title">Matching</div>
+            </div>
+            <div class="step-indicator" id="step4-indicator">
+                <div class="step-circle">4</div>
+                <div class="step-title">Interview</div>
+            </div>
+        </div>
+        
+        <div class="step-content active" id="step1-content">
+            <h2>Upload Job Description</h2>
+            <p>Start by uploading the job description you want to match candidates against.</p>
+            
+            <div class="upload-area" id="jd-upload-area">
+                <div class="upload-icon">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <div class="upload-text">Upload Job Description</div>
+                <div class="upload-hint">PDF or Word documents supported</div>
+                <input type="file" id="jd-upload" accept=".pdf,.doc,.docx" hidden>
+            </div>
+            
+            <div id="jd-loading" class="loading text-center hidden">
+                <div class="loading-spinner"></div>
+                <p class="mt-3">Analyzing job description...</p>
+            </div>
+
+            <div id="jd-preview" class="hidden">
+                <h3>Job Description Summary</h3>
+                <div class="file-list">
+                    <div class="file-item">
+                        <div class="file-icon">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <div class="file-name" id="jd-filename"></div>
+                    </div>
+                </div>
+                
+                <div class="jd-summary">
+                    <h4>AI-Generated Summary:</h4>
+                    <p><strong>Position:</strong> <span id="jd-position">Loading...</span></p>
+                    <p><strong>Key Requirements:</strong></p>
+                    <ul id="jd-requirements">
+                        <li>Loading requirements...</li>
+                    </ul>
+                </div>
+                
+                <button id="next-step1" class="btn">
+                    <i class="fas fa-arrow-right"></i> Continue to CV Upload
+                </button>
+            </div>
+        </div>
+        
+        <div class="step-content" id="step2-content">
+            <h2>Upload Candidate CVs</h2>
+            <p>Upload resumes of candidates you want to evaluate for this position.</p>
+            
+            <div class="upload-area" id="cv-upload-area">
+                <div class="upload-icon">
+                    <i class="fas fa-file-pdf"></i>
+                </div>
+                <div class="upload-text">Upload Candidate CVs</div>
+                <div class="upload-hint">PDF documents supported</div>
+                <input type="file" id="cv-upload" accept=".pdf,.doc,.docx" multiple hidden>
+            </div>
+            
+            <div id="cv-preview" class="hidden">
+                <h3>Selected CVs</h3>
+                <div class="file-list" id="cv-file-list"></div>
+                
+                <button id="process-cvs" class="btn">
+                    <i class="fas fa-cogs"></i> Process CVs
+                </button>
+            </div>
+        </div>
+        
+        <div class="step-content" id="step3-content">
+            <h2>Candidate Matching Results</h2>
+            <p>Our AI has analyzed the CVs and matched them against the job requirements.</p>
+            
+            <div class="loading" id="matching-loading">
+                <div class="loading-spinner"></div>
+                <p>Analyzing candidates and calculating match scores...</p>
+            </div>
+            
+            <div class="progress-container hidden" id="progress-container">
+                <div class="progress-bar">
+                    <div class="progress" id="progress-bar"></div>
+                </div>
+                <div class="progress-text" id="progress-text">Processing 0/0 CVs</div>
+            </div>
+            
+            <div class="results hidden" id="results-container">
+                <h3>Ranked Candidates</h3>
+                <div id="candidates-list"></div>
+                
+                <button id="next-step3" class="btn">
+                    <i class="fas fa-calendar-check"></i> Schedule Interviews
+                </button>
+            </div>
+        </div>
+        
+        <div class="step-content" id="step4-content">
+            <h2>Schedule Interviews</h2>
+            <p>Configure interview schedule and review slots for shortlisted candidates.</p>
+            
+            <div id="shortlisted-candidates" class="mb-4">
+                <h4 class="mb-3">Shortlisted Candidates</h4>
+                <div id="shortlisted-list" class="card bg-white p-3"></div>
+            </div>
+
+            <div class="scheduling-config card bg-white">
+                <div class="card-body">
+                    <h4 class="mb-3">Schedule Configuration</h4>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label>Interview Start Date</label>
+                            <input type="date" id="interview-start-date" class="form-control" required>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label>Starting Time</label>
+                            <input type="time" id="interview-start-time" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label>Interview Mode</label>
+                            <select id="interview-mode" class="form-control" required>
+                                <option value="virtual">Virtual (Zoom)</option>
+                                <option value="in-person">In-Person</option>
+                                <option value="phone">Phone Call</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label>Location/Link</label>
+                            <input type="text" id="interview-location" class="form-control" placeholder="Office address or meeting link" required>
+                        </div>
+                    </div>
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label>Interview Duration</label>
+                        <select id="interview-duration" class="form-control" required>
+                            <option value="15">15 minutes</option>
+                            <option value="30" selected>30 minutes</option>
+                            <option value="45">45 minutes</option>
+                            <option value="60">1 hour</option>
+                            <option value="90">1.5 hours</option>
+                            <option value="120">2 hours</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label>Break Between Interviews</label>
+                        <select id="interview-break" class="form-control" required>
+                            <option value="0">No break</option>
+                            <option value="5">5 minutes</option>
+                            <option value="10" selected>10 minutes</option>
+                            <option value="15">15 minutes</option>
+                            <option value="30">30 minutes</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label>Interviewer Name</label>
+                        <input type="text" id="interviewer-name" class="interviewer-name form-control" placeholder="Who will conduct the interview?" required>
+                    </div>
+                </div>
+                <button class="btn btn-primary" id="generate-slots">
+                    <i class="fas fa-calendar-alt"></i> Generate Time Slots
+                </button>
+            </div>
+            
+
+            
+            <div id="interview-slots-container" class="mt-4">
+                <!-- Interview slots will be dynamically added here -->
+            </div>
+            
+            <div id="interview-preview" class="mt-4 hidden">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="mb-0">Interview Schedule Preview</h4>
+                    </div>
+                    <div class="card-body">
+                        <div id="preview-content"></div>
+                        <div class="preview-actions mt-3">
+                            <button class="btn btn-secondary" id="modify-schedule">
+                                <i class="fas fa-edit"></i> Modify Schedule
+                            </button>
+                            <button class="btn btn-success" id="send-invites">
+                                <i class="fas fa-envelope"></i> Confirm & Send Invites
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+
+            </div>
+        </div>
+        
+        <div class="step-content hidden" id="success-content">
+            <div class="success-message">
+                <div class="success-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h2 class="success-title">Interviews Scheduled Successfully!</h2>
+                <p>Invitations have been sent to all shortlisted candidates.</p>
+                <p>You can view the scheduled interviews in your calendar.</p>
+                <button id="restart-process" class="btn">
+                    <i class="fas fa-redo"></i> Start New Screening
+                </button>
+            </div>
+        </div>
+        
+        <!-- Notification element -->
+        <div class="notification" id="notification">
+            <div class="notification-icon">
+                <i class="fas fa-info-circle"></i>
+            </div>
+            <div class="notification-content">
+                <div class="notification-title">Notification Title</div>
+                <div class="notification-message">Notification message here</div>
+            </div>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
