@@ -27,4 +27,5 @@ if not os.path.exists(app.config['UPLOAD_FOLDER']):
 logger.info("Recruitment Assistant API initialized")
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    port = int(os.environ.get("PORT", 5000))  # Fallback to 5000 if PORT not set
+    app.run(host='0.0.0.0', port=port)
