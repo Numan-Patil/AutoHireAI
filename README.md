@@ -64,7 +64,7 @@ Ideal for startups, HR professionals, and developers exploring AI in recruitment
 1. Upload a **Job Description**
 2. AI generates a **summary**
 3. Upload **candidate resumes**
-4. AI ranks and scores candidates
+4. AI **ranks** and scores candidates
 5. Schedule interviews with a **click**
 
 ---
@@ -83,16 +83,19 @@ Ideal for startups, HR professionals, and developers exploring AI in recruitment
 ### Prerequisites
 
 - Python 3.x
-- Flask (if backend is included)
+- Flask 
 - Browser for frontend testing
 
 ### Steps
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/AutoHireAI.git
+git clone https://github.com/Numan-Patil/HiringAssistant.git
 
 # Navigate to project directory
+cd AutoHireAI
+
+# Navigate to project directory (Again)
 cd AutoHireAI
 
 # If using Flask backend
@@ -123,6 +126,7 @@ For major changes, open an issue first to discuss what you’d like to change.
 ---
 
 ## 🔗Live Link
+(Initially Takes 50 secs to load )
 🔗[AutoHireAI](https://hiringassistant.onrender.com/)
 
 ---
